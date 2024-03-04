@@ -6,7 +6,7 @@ const App = () => {
     return (
         <div>
             <NavBar />
-            <ItemListContainer greeting="Bienvenidos al mercado más grande de Córdoba" />
+            <ItemListContainer greeting="Bienvenidos al mercado más grande de Córdoba!" />
         </div>
     );
 };
