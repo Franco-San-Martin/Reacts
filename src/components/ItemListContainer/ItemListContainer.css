@@ -1,0 +1,37 @@
+.catalog-container {
+    padding: 20px;
+}
+
+.catalog-title {
+    color: red; /* Letras rojas */
+}
+
+.products-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Tres columnas */
+    gap: 20px; /* Espacio entre productos */
+}
+
+/* Estilos para el componente Item */
+.item {
+    border: 1px solid black; /* Borde negro */
+    padding: 20px;
+    text-align: center;
+}
+
+.item img {
+    max-width: 100%;
+}
+
+.item button {
+    background-color: blue; /* Botones azules */
+    color: white; /* Texto blanco */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.item button:hover {
+
+    background-color: darkblue; 
+}
