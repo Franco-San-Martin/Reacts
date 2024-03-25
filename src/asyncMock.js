@@ -91,17 +91,21 @@ export const getProducts = () => {
 }
 
 export const getProductById = (productId) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         setTimeout(() => {
-            resolve(products.find(prod => prod.id === productId))
-        }, 500)
-        })
+            const product = products.find(prod => prod.id === productId);
+            if (product) {
+                resolve(product);
+            } else {
+                reject("Producto no encontrado");
+            }
+        }, 500);
+    });
 }
-
 export const getProductByCategory = (productCategory) => {
     return new Promise((resolve) => {
         setTimeout(() => {
-            resolve(products.find(prod => prod.category === productCategory))
+            resolve(products.filter(prod => prod.category === productCategory))
         }, 500)
-        })
+    })
 }
