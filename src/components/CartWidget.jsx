@@ -1,39 +1,9 @@
-import React, { useState } from 'react';
-import { collection, addDoc, Timestamp } from 'firebase/firestore'; 
-import { useCart } from '../components/CartContext/CartContext';
+import React from 'react';
+import './CartWidget.css';
 
 const CartWidget = ({ cartItems, onRemove }) => {
-    const { clearCart } = useCart(); 
-
-
-    const createOrder = async () => {
-        try {
-            const orderData = {
-                buyer: {
-                    name: 'Nombre del comprador', 
-                    phone: 'Número de teléfono',
-                    email: 'correo@example.com'
-                },
-                items: cartItems.map(item => ({
-                    id: item.id,
-                    title: item.name,
-                    price: item.price
-                })),
-                date: Timestamp.now(), 
-                total: cartItems.reduce((total, item) => total + item.price, 0) 
-            };
-
-            const ordersCollectionRef = collection(firestore, 'orders'); 
-            await addDoc(ordersCollectionRef, orderData); 
-
-            clearCart();
-        } catch (error) {
-            console.error('Error creating order:', error);
-        }
-    };
-
-    if (!cartItems || cartItems.length === 0) {
-        return <div>No hay items en el carrito</div>;
+    if (!cartItems) {
+        return <div className="cart-widget">No hay items en el carrito</div>;
     }
 
     return (
@@ -41,16 +11,16 @@ const CartWidget = ({ cartItems, onRemove }) => {
             <h2>Carrito</h2>
             <div className="cart-items">
                 {cartItems.map(item => (
-                    <div key={item.id} className="cart-item">
-                        <p>{item.name}</p>
-                        <p>${item.price}</p>
-                        <button onClick={() => onRemove(item.id)}>Eliminar</button>
-                    </div>
+                    <Cart
+                        key={item.id}
+                        id={item.id}
+                        name={item.name}
+                        img={item.img}
+                        price={item.price}
+                        stock={item.stock}
+                        onRemove={onRemove}
+                    />
                 ))}
-            </div>
-            <div className="cart-summary">
-                <p>Total: ${cartItems.reduce((total, item) => total + item.price, 0)}</p>
-                <button onClick={createOrder}>Finalizar compra</button>
             </div>
         </div>
     );
