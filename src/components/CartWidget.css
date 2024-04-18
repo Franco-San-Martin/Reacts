@@ -1,0 +1,12 @@
+.cart-widget {
+    background-color: #E53935; 
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cart-widget:hover {
+    background-color: #FF5722; 
+}

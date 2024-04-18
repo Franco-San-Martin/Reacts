@@ -1,30 +1,42 @@
-import  { useState, useEffect } from 'react';
-import { getProducts, getProductByCategory } from '../../asyncMock';
+import React, { useState, useEffect } from 'react';
+import { FirebaseAppProvider } from 'reactfire'; 
+import { getFirestore, collection, query, getDocs } from 'firebase/firestore';
 import ItemList from '../ItemList/ItemList';
-import './ItemListContainer.css'; 
-import { useParams } from 'react-router-dom';
+import { initializeApp } from 'firebase/app'; 
+import firebaseConfig from '../firebase/firestore'; 
+import './ItemListContainer.css'; // Importamos los estilos CSS
 
-const ItemListContainer = ({ greeting }) => {
+const ItemListContainer = () => {
     const [products, setProducts] = useState([]);
-    const { categoryId } = useParams();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const asyncFunc = categoryId ? getProductByCategory : getProducts;
-        
-        asyncFunc(categoryId)
-            .then(response => {
-                setProducts(response);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    }, [categoryId]);
+        const fetchProducts = async () => {
+            const firebaseApp = await initializeApp(firebaseConfig);
+            const firestore = getFirestore(firebaseApp);
+            const productsCollection = collection(firestore, 'products');
+            const q = query(productsCollection);
+
+            try {
+                const querySnapshot = await getDocs(q);
+                const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setProducts(productsData);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
 
     return (
-        <div>
-            <h1>{greeting}</h1>
-            <ItemList products={products} />
-        </div>
+        <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+            <div className="item-list-container">
+                {loading ? <div>Cargando productos...</div> : <ItemList products={products} />}
+            </div>
+        </FirebaseAppProvider>
     );
 };
 

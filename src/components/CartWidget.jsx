@@ -1,12 +1,59 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { collection, addDoc, Timestamp } from 'firebase/firestore'; 
+import { useCart } from '../components/CartContext/CartContext';
 
-export default function CartWidget({ itemCount }) {
+const CartWidget = ({ cartItems, onRemove }) => {
+    const { clearCart } = useCart(); 
+
+
+    const createOrder = async () => {
+        try {
+            const orderData = {
+                buyer: {
+                    name: 'Nombre del comprador', 
+                    phone: 'Número de teléfono',
+                    email: 'correo@example.com'
+                },
+                items: cartItems.map(item => ({
+                    id: item.id,
+                    title: item.name,
+                    price: item.price
+                })),
+                date: Timestamp.now(), 
+                total: cartItems.reduce((total, item) => total + item.price, 0) 
+            };
+
+            const ordersCollectionRef = collection(firestore, 'orders'); 
+            await addDoc(ordersCollectionRef, orderData); 
+
+            clearCart();
+        } catch (error) {
+            console.error('Error creating order:', error);
+        }
+    };
+
+    if (!cartItems || cartItems.length === 0) {
+        return <div>No hay items en el carrito</div>;
+    }
+
     return (
         <div className="cart-widget">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
-                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
-            </svg>
-            <span className="badge bg-primary">{itemCount}</span>
+            <h2>Carrito</h2>
+            <div className="cart-items">
+                {cartItems.map(item => (
+                    <div key={item.id} className="cart-item">
+                        <p>{item.name}</p>
+                        <p>${item.price}</p>
+                        <button onClick={() => onRemove(item.id)}>Eliminar</button>
+                    </div>
+                ))}
+            </div>
+            <div className="cart-summary">
+                <p>Total: ${cartItems.reduce((total, item) => total + item.price, 0)}</p>
+                <button onClick={createOrder}>Finalizar compra</button>
+            </div>
         </div>
     );
 }
+
+export default CartWidget;

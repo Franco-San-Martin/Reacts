@@ -1,31 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { getProductById } from '../../asyncMock';
-import ItemCount from "../ItemCount/ItemCount";
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import ItemCount from '../ItemCount/ItemCount';
+import './ItemDetail.css';
 
-const ItemDetail = () => {
-    const [product, setProduct] = useState(null);
-    const { id } = useParams();
+const ItemDetail = ({ product }) => {
+    const [showItemCount, setShowItemCount] = useState(true);
+    const [cartQuantity, setCartQuantity] = useState(0);
 
-    useEffect(() => {
-        console.log("ID recibido:", id); // Verifica el id recibido
-        getProductById(parseInt(id))
-            .then(response => {
-                setProduct(response);
-            })
-            .catch(error => {
-                console.error(error);
-            });
-    }, [id]);
+    const handleAddToCart = (quantity) => {
+        setCartQuantity(quantity);
+        setShowItemCount(false);
+    };
 
     if (!product) {
-        return <div>Cargando producto...</div>;
+        return <div className="item-detail">No se encontró el producto.</div>;
     }
 
     const { name, imageUrl, category, description, price, stock } = product;
 
     return (
-        <article>
+        <article className="item-detail">
             <header>
                 <h2>{name}</h2>
             </header>
@@ -37,11 +30,18 @@ const ItemDetail = () => {
                 <p>Descripcion: {description}</p>
                 <p>Precio: ${price}</p>
             </section>
-            <footer>
-                <ItemCount initial={1} stock={stock} onAdd={(quantity) => console.log('Cantidad agregada')} />
-            </footer>
+            {showItemCount && (
+                <footer>
+                    <ItemCount initial={0} stock={stock} onAdd={handleAddToCart} />
+                </footer>
+            )}
+            {cartQuantity > 0 && (
+                <div>
+                    <button onClick={() => console.log('Ir al carrito')}>Terminar mi compra</button>
+                </div>
+            )}
         </article>
     );
-}
+};
 
 export default ItemDetail;

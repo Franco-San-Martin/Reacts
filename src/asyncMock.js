@@ -4,7 +4,7 @@ const products = [
         name: "Smartphone",
         description: "El ultimo teléfono que salio a la venta",
         price: 699.99,
-        imageUrl: "./",
+        imageUrl: "https://www.att.com/scmsassets/global/devices/phones/apple/apple-iphone-15-pro-max/gallery/white-titanium-1.jpg",
         category: "electronics",
         stock: 10
     },
