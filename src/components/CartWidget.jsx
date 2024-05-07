@@ -1,8 +1,11 @@
 import React from 'react';
-import './CartWidget.css';
+import Cart from './Cart'; 
+import { useCart } from '../components/CartContext/CartContext';
 
-const CartWidget = ({ cartItems, onRemove }) => {
-    if (!cartItems) {
+const CartWidget = () => {
+    const { cartItems, removeFromCart } = useCart(); 
+
+    if (!cartItems || cartItems.length === 0) {
         return <div className="cart-widget">No hay items en el carrito</div>;
     }
 
@@ -18,7 +21,7 @@ const CartWidget = ({ cartItems, onRemove }) => {
                         img={item.img}
                         price={item.price}
                         stock={item.stock}
-                        onRemove={onRemove}
+                        onRemove={removeFromCart} 
                     />
                 ))}
             </div>

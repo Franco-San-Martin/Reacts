@@ -1,16 +1,17 @@
 import React from 'react';
-import Item from '../Item/Item';
-import './ItemList.css'; 
+import { Link } from 'react-router-dom';
 
-const ItemList = ({ products }) => {
-    // Verificar si products es un array válido
-    if (!Array.isArray(products)) {
-        return <div>No hay productos disponibles.</div>;
-    }
-
+const ItemList = ({ products, onAddToCart }) => {
     return (
-        <div className='list-group'>
-            {products.map(prod => <Item key={prod.id} {...prod} />)}
+        <div className="item-list">
+            {products.map(product => (
+                <div key={product.id} className="product-item">
+                    <h3>{product.name}</h3>
+                    <p>Precio: ${product.price}</p>
+                    <Link to={`/item/${product.id}`}>Ver detalle</Link>
+                    <button onClick={() => onAddToCart(product)}>Agregar al carrito</button>
+                </div>
+            ))}
         </div>
     );
 };

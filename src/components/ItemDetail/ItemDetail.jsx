@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import ItemCount from '../ItemCount/ItemCount';
 import './ItemDetail.css';
 
-const ItemDetail = ({ product }) => {
+const ItemDetail = ({ product, onAddToCart }) => {
     const [showItemCount, setShowItemCount] = useState(true);
-    const [cartQuantity, setCartQuantity] = useState(0);
 
-    const handleAddToCart = (quantity) => {
-        setCartQuantity(quantity);
+    const handleAddToCartClick = (quantity) => {
         setShowItemCount(false);
+        onAddToCart(quantity); // Pasar la cantidad seleccionada al carrito
     };
 
     if (!product) {
@@ -32,13 +31,8 @@ const ItemDetail = ({ product }) => {
             </section>
             {showItemCount && (
                 <footer>
-                    <ItemCount initial={0} stock={stock} onAdd={handleAddToCart} />
+                    <ItemCount initial={0} stock={stock} onAdd={handleAddToCartClick} />
                 </footer>
-            )}
-            {cartQuantity > 0 && (
-                <div>
-                    <button onClick={() => console.log('Ir al carrito')}>Terminar mi compra</button>
-                </div>
             )}
         </article>
     );

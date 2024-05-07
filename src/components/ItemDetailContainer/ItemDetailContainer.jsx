@@ -1,36 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { getFirestore, collection, query, getDocs, where } from 'firebase/firestore';
-import ItemList from '../ItemList/ItemList';
+import { useParams } from 'react-router-dom';
+import { FirebaseAppProvider } from 'reactfire';
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import firebaseConfig from "../firebase/firestore";
+import ItemDetail from '../ItemDetail/ItemDetail'; 
 
-const ItemListContainer = () => {
-    const [products, setProducts] = useState([]);
+const ItemDetailContainer = () => {
+    const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { itemId } = useParams(); // Obtener el ID del producto de la URL
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            const firestore = getFirestore();
-            const productsCollection = collection(firestore, 'products');
-            const q = query(productsCollection);
+        const fetchProduct = async () => {
+            const firebaseApp = await initializeApp(firebaseConfig);
+            const firestore = getFirestore(firebaseApp);
+            const productRef = doc(firestore, 'productos', itemId); // Referencia al documento del producto
 
             try {
-                const querySnapshot = await getDocs(q);
-                const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setProducts(productsData);
-                setLoading(false);
+                const productDoc = await getDoc(productRef);
+                if (productDoc.exists()) {
+                    const productData = { id: productDoc.id, ...productDoc.data() };
+                    setProduct(productData);
+                    setLoading(false);
+                } else {
+                    console.log("No such product document!");
+                }
             } catch (error) {
-                console.error('Error fetching products:', error);
-                setLoading(false);
+                console.error('Error fetching product:', error);
             }
         };
 
-        fetchProducts();
-    }, []);
+        fetchProduct();
+    }, [itemId]);
+
+    const handleAddToCart = (quantity) => {
+        // Aquí puedes implementar la lógica para agregar el producto al carrito
+        console.log('Agregando al carrito:', product);
+    };
 
     return (
-        <div>
-            {loading ? <div>Cargando productos...</div> : <ItemList products={products} />}
+        <div className="item-detail-container">
+            {loading ? (
+                <div>Cargando detalle del producto...</div>
+            ) : (
+                <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+                    <ItemDetail product={product} onAddToCart={handleAddToCart} />
+                </FirebaseAppProvider>
+            )}
         </div>
     );
 };
 
-export default ItemListContainer;
+export default ItemDetailContainer;
